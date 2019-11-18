@@ -10,18 +10,40 @@ class BLEManager extends State<ConfigureGateway> {
   final String gatewayWifiServiceUUID = 'a8a9e49c-aa9a-d441-9bec-817bb4900e40';
   final GlobalKey<BLEManager> _key = GlobalKey<BLEManager>();
   var connectionState = BleConnectionState.disconnected;
-  List<Widget> results = [];
+  final results = <String, ScanResult>{};
 
   Future<Null> _startScan() async {
     try {
       await for (final scanResult in RxBle.startScan(service: gatewayWifiServiceUUID).timeout(Duration(seconds: 10))) {
-        setState(() {
-          results.add(Text(scanResult.toString()));
-        });
+        setState(() => results[scanResult.deviceId] = scanResult);
       }
     } catch (e) {
       print(e);
     }
+  }
+
+  Widget _cardBuilder(BuildContext context, int i) {
+    var deviceId = results.keys.toList()[i];
+    return Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          ListTile(
+            title: Text(results[deviceId].deviceName),
+            subtitle: Text(deviceId),
+            trailing: Column(
+              children: <Widget>[
+                Icon(Icons.bluetooth),
+                Text(results[deviceId].rssi.toString()),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -35,8 +57,9 @@ class BLEManager extends State<ConfigureGateway> {
     return RefreshIndicator(
       key: _key,
       onRefresh: _startScan,
-      child: ListView(
-        children: results,
+      child: ListView.builder(
+        itemCount: results.length,
+        itemBuilder: _cardBuilder,
       ),
     );
   }
