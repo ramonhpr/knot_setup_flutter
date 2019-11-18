@@ -25,6 +25,12 @@ class BLEManager extends State<ConfigureGateway> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    RxBle.requestAccess();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
       key: _key,
