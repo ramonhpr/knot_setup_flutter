@@ -7,13 +7,14 @@ class ConfigureGateway extends StatefulWidget {
 }
 
 class BLEManager extends State<ConfigureGateway> {
+  final String gatewayWifiServiceUUID = 'a8a9e49c-aa9a-d441-9bec-817bb4900e40';
   final GlobalKey<BLEManager> _key = GlobalKey<BLEManager>();
   var connectionState = BleConnectionState.disconnected;
   List<Widget> results = [];
 
   Future<Null> _startScan() async {
     try {
-      await for (final scanResult in RxBle.startScan().timeout(Duration(seconds: 10))) {
+      await for (final scanResult in RxBle.startScan(service: gatewayWifiServiceUUID).timeout(Duration(seconds: 10))) {
         setState(() {
           results.add(Text(scanResult.toString()));
         });
