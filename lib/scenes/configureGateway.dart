@@ -22,6 +22,21 @@ class BLEManager extends State<ConfigureGateway> {
     }
   }
 
+  Widget _renderMessageNotFound() {
+    return ListView(
+      padding: const EdgeInsets.only(top: 180),
+      children: <Widget>[
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Icon(Icons.bluetooth, size: 80.0),
+            Text('No devices found'),
+          ],
+        ),
+      ],
+    );
+  }
+
   Widget _cardBuilder(BuildContext context, int i) {
     var deviceId = results.keys.toList()[i];
     return Card(
@@ -57,7 +72,7 @@ class BLEManager extends State<ConfigureGateway> {
     return RefreshIndicator(
       key: _key,
       onRefresh: _startScan,
-      child: ListView.builder(
+      child: results.isEmpty ? _renderMessageNotFound() : ListView.builder(
         itemCount: results.length,
         itemBuilder: _cardBuilder,
       ),
