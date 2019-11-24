@@ -16,6 +16,7 @@ class WifiSetupState extends State<WifiSetup> {
   TextEditingController _ssidController;
   TextEditingController _pswdController;
   bool buttonDisabled = true;
+  bool showProgress = false;
 
   WifiSetupState({@required this.deviceId}) : super();
 
@@ -53,9 +54,28 @@ class WifiSetupState extends State<WifiSetup> {
   void _onButtonPressed() async {
     FocusScope.of(context).requestFocus(new FocusNode());
     setState(() => buttonDisabled = true);
+    setState(() => showProgress = true);
 
     // TODO: Connect with bluetooth device
     Navigator.pop(context);
+  }
+
+  Widget _showProgressIndication() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text('Connecting...'),
+        SizedBox(
+          height: 15,
+          width: 15,
+          child: CircularProgressIndicator(
+            strokeWidth: 3,
+            valueColor: new AlwaysStoppedAnimation<Color>(Colors.white),
+          ),
+        ),
+      ],
+    );
   }
 
   Form _renderForm() {
@@ -90,7 +110,7 @@ class WifiSetupState extends State<WifiSetup> {
           ),
           RaisedButton(
             onPressed: buttonDisabled ? null : _onButtonPressed,
-            child: Text('Connect'),
+            child: showProgress ? _showProgressIndication() : Text('Connect'),
           ),
         ],
       ),
