@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 
 class WifiSetup extends StatefulWidget {
@@ -25,6 +26,9 @@ class WifiSetupState extends State<WifiSetup> {
     super.initState();
     _ssidController = TextEditingController();
     _pswdController = TextEditingController();
+    Connectivity().getWifiName().then((value) {
+      _ssidController.text = value;
+    });
   }
 
   TextFormField _renderTextField(
