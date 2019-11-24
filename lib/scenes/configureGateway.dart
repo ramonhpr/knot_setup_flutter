@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knot_setup_flutter/scenes/WifiSetup.dart';
 import 'package:rx_ble/rx_ble.dart';
 
 class ConfigureGateway extends StatefulWidget {
@@ -55,6 +56,10 @@ class BLEManager extends State<ConfigureGateway> {
                 Text(results[deviceId].rssi.toString()),
               ],
             ),
+            onTap: () async {
+              RxBle.stopScan();
+              Navigator.push(context, MaterialPageRoute(builder: (context) => WifiSetup(deviceId: deviceId)));
+            },
           ),
         ],
       ),
