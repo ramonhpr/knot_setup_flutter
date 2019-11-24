@@ -58,7 +58,12 @@ class BLEManager extends State<ConfigureGateway> {
             ),
             onTap: () async {
               RxBle.stopScan();
-              Navigator.push(context, MaterialPageRoute(builder: (context) => WifiSetup(deviceId: deviceId)));
+              String err = await Navigator.push(context, MaterialPageRoute(builder: (context) => WifiSetup(deviceId: deviceId)));
+              if (err != null && err.isNotEmpty) {
+                Scaffold.of(context)
+                  ..removeCurrentSnackBar()
+                  ..showSnackBar(SnackBar(content: Text("$err")));
+              }
             },
           ),
         ],
@@ -70,6 +75,15 @@ class BLEManager extends State<ConfigureGateway> {
   void initState() {
     super.initState();
     RxBle.requestAccess();
+  }
+
+  @override
+  void dispose() {
+    RxBle.stopScan();
+    for (var deviceId in results.keys) {
+      RxBle.disconnect(deviceId: deviceId);
+    }
+    super.dispose();
   }
 
   @override

@@ -1,5 +1,6 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:rx_ble/rx_ble.dart';
 
 class WifiSetup extends StatefulWidget {
   final String deviceId;
@@ -12,6 +13,8 @@ class WifiSetup extends StatefulWidget {
 }
 
 class WifiSetupState extends State<WifiSetup> {
+  static const String SSID_UUID_CHAR = 'a8a9e49c-aa9a-d441-9bec-817bb4900d41';
+  static const String PSWD_UUID_CHAR = 'a8a9e49c-aa9a-d441-9bec-817bb4900d42';
   final _formKey = GlobalKey();
   final String deviceId;
   TextEditingController _ssidController;
@@ -60,8 +63,30 @@ class WifiSetupState extends State<WifiSetup> {
     setState(() => buttonDisabled = true);
     setState(() => showProgress = true);
 
-    // TODO: Connect with bluetooth device
-    Navigator.pop(context);
+    try {
+      await for (final state in RxBle.connect(deviceId)) {
+        print("device state: $state");
+        var deviceState = await RxBle.getConnectionState(deviceId);
+        if (deviceState == BleConnectionState.connected) {
+          await RxBle.writeChar(
+            deviceId,
+            SSID_UUID_CHAR,
+            RxBle.stringToChar(_ssidController.text),
+          );
+          await RxBle.writeChar(
+            deviceId,
+            PSWD_UUID_CHAR,
+            RxBle.stringToChar(_pswdController.text),
+          );
+          await RxBle.disconnect(deviceId: deviceId);
+          setState(() => showProgress = false);
+          Navigator.pop(context);
+        }
+      }
+    } catch (e) {
+      print(e);
+      Navigator.pop(context, "Unexpected error ocorred on bluetooth connection");
+    }
   }
 
   Widget _showProgressIndication() {
