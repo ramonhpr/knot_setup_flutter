@@ -15,6 +15,7 @@ class WifiSetupState extends State<WifiSetup> {
   final String deviceId;
   TextEditingController _ssidController;
   TextEditingController _pswdController;
+  bool buttonDisabled = true;
 
   WifiSetupState({@required this.deviceId}) : super();
 
@@ -49,6 +50,14 @@ class WifiSetupState extends State<WifiSetup> {
     return null;
   }
 
+  void _onButtonPressed() async {
+    FocusScope.of(context).requestFocus(new FocusNode());
+    setState(() => buttonDisabled = true);
+
+    // TODO: Connect with bluetooth device
+    Navigator.pop(context);
+  }
+
   Form _renderForm() {
     return Form(
       key: _formKey,
@@ -72,7 +81,16 @@ class WifiSetupState extends State<WifiSetup> {
               TextInputType.visiblePassword,
               _pswdController,
               validator: _validatePassword,
+              onChanged: (value) {
+                if (value.isNotEmpty) {
+                  setState(() => buttonDisabled = false);
+                }
+              },
             ),
+          ),
+          RaisedButton(
+            onPressed: buttonDisabled ? null : _onButtonPressed,
+            child: Text('Connect'),
           ),
         ],
       ),
