@@ -21,6 +21,7 @@ class WifiSetupState extends State<WifiSetup> {
   TextEditingController _pswdController;
   bool buttonDisabled = true;
   bool showProgress = false;
+  bool passwordVisible = true;
 
   WifiSetupState({@required this.deviceId}) : super();
 
@@ -36,16 +37,23 @@ class WifiSetupState extends State<WifiSetup> {
 
   TextFormField _renderTextField(
       String label, TextInputType type, TextEditingController controller,
-      {ValueChanged<String> onChanged, FormFieldValidator<String> validator}) {
+      {ValueChanged<String> onChanged, FormFieldValidator<String> validator, bool isSuffixVisible, Function onSuffixPressed}) {
     return TextFormField(
       keyboardType: type,
       controller: controller,
-      obscureText: type == TextInputType.visiblePassword,
+      obscureText: type == TextInputType.visiblePassword && !isSuffixVisible,
       decoration: InputDecoration(
         labelText: label,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(25.0),
           borderSide: BorderSide(),
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(
+            isSuffixVisible ? Icons.visibility : Icons.visibility_off,
+            semanticLabel: isSuffixVisible ? 'hide password' : 'show password',
+          ),
+          onPressed: onSuffixPressed,
         ),
       ),
       validator: validator,
@@ -134,6 +142,12 @@ class WifiSetupState extends State<WifiSetup> {
                 if (value.isNotEmpty) {
                   setState(() => buttonDisabled = false);
                 }
+              },
+              isSuffixVisible: passwordVisible,
+              onSuffixPressed: () {
+                setState(() {
+                  passwordVisible = !passwordVisible;
+                });
               },
             ),
           ),

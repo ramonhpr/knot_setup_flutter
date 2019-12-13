@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './scenes/configureGateway.dart';
+import './scenes/listGateways.dart';
 
 void main() => runApp(Main());
 
@@ -26,7 +27,7 @@ class Main extends StatelessWidget {
           body: TabBarView(
             children: [
               ConfigureGateway(),
-              Text('On page connected gateways'),
+              ListGateways(),
             ],
           ),
         ),

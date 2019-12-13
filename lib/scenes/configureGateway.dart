@@ -15,7 +15,9 @@ class BLEManager extends State<ConfigureGateway> {
 
   Future<Null> _startScan() async {
     try {
-      await for (final scanResult in RxBle.startScan(service: gatewayWifiServiceUUID).timeout(Duration(seconds: 10))) {
+      await for (final scanResult
+          in RxBle.startScan(service: gatewayWifiServiceUUID)
+              .timeout(Duration(seconds: 10))) {
         setState(() => results[scanResult.deviceId] = scanResult);
       }
     } catch (e) {
@@ -24,17 +26,19 @@ class BLEManager extends State<ConfigureGateway> {
   }
 
   Widget _renderMessageNotFound() {
-    return ListView(
-      padding: const EdgeInsets.only(top: 180),
-      children: <Widget>[
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Icon(Icons.bluetooth, size: 80.0),
-            Text('No devices found'),
-          ],
-        ),
-      ],
+    return Center(
+      child: ListView(
+        shrinkWrap: true,
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Icon(Icons.bluetooth, size: 80.0),
+              Text('No devices found'),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -58,7 +62,12 @@ class BLEManager extends State<ConfigureGateway> {
             ),
             onTap: () async {
               RxBle.stopScan();
-              String err = await Navigator.push(context, MaterialPageRoute(builder: (context) => WifiSetup(deviceId: deviceId)));
+              String err = await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => WifiSetup(deviceId: deviceId),
+                ),
+              );
               if (err != null && err.isNotEmpty) {
                 Scaffold.of(context)
                   ..removeCurrentSnackBar()
@@ -91,10 +100,12 @@ class BLEManager extends State<ConfigureGateway> {
     return RefreshIndicator(
       key: _key,
       onRefresh: _startScan,
-      child: results.isEmpty ? _renderMessageNotFound() : ListView.builder(
-        itemCount: results.length,
-        itemBuilder: _cardBuilder,
-      ),
+      child: results.isEmpty
+          ? _renderMessageNotFound()
+          : ListView.builder(
+              itemCount: results.length,
+              itemBuilder: _cardBuilder,
+            ),
     );
   }
 }
